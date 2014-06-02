@@ -15,19 +15,50 @@ class block_your_course extends block_base
 
 	public function get_content() 
 	{
+		global $CFG;
+		$cache = cache::make('block_your_course', 'yourcoursedata');
+		$content = "";
+		$usecache = false;
+		$cachettl = 60; // cache ttl seconds
+		
+		if ($cachetimestamp = $cache->get('yourcoursetimestamp')){
+			if ((time() - $cachetimestamp) < $cachettl){
+				$usecache = true;
+			}			
+		}
+		
+		if ($usecache){
+			$content = $cache->get('yourcoursedata');
+		}
+		else{
+			$content = $this->get_yc_content($cache);
+		}
+		
+		if ($this->content !== null) 
+		{
+		  return $this->content;
+		}
+	 
+		$this->content = new stdClass;
+		$this -> content -> text = $content;		
+		$this->content->footer = 'Your Course';
+	 
+	   
+		return $this->content;
+    }
+
+	private function get_yc_content($cache){
 		global $CFG, $COURSE;
 		
-		$cache = cache::make('block_your_course', 'yourcoursedata');
-			
-		$url = 'http://icitydelta.bcu.ac.uk/api/yourcourse/' . $CFG->facshort . '/' . $COURSE->id;
-			
+		$content = "";
+		$url = 'http://icitydelta.bcu.ac.uk/api/yourcourse/' . $CFG->facshort . '/' . $COURSE->id;			
 		$headers = array(
-            'Content-Type' => 'application/xml',
-            'Accept' => 'application/xml'
-        );		
-		
+	        'Content-Type' => 'application/xml',
+	        'Accept' => 'application/xml'
+	    );		
+			
 		$data = download_file_content($url, $headers, null, false, '300', '20', true, null, false);
-		
+			
 		if (!$data)
 		{
 			// replace with empty string after testing whcih will prevent block from shwoing at all
@@ -43,24 +74,13 @@ class block_your_course extends block_base
 			$module_details_url = $module -> YourCourseModuleUrl;
 			$module_guide_url = $module -> ModuleGuideUrl;			
 			$content = "<h3>Module information</h3>" . "<p>Leader: <a href=\"mailto:$email\">$leader</a><br>" . "Tel: $tel<br>" . 
-				"<a href=\"$module_details_url\" target=\"modulewin\">Module details</a><br>" . 
-				"<a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a></p>";
-				
+			"<a href=\"$module_details_url\" target=\"modulewin\">Module details</a><br>" . 
+	        "<a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a></p>" . 
+	        "time generated = " . time();
+			
 			$cache->set('yourcoursedata', $content);
-			$cache->set('yourcoursetimestamp', time());
-			$content .= $cache->get('yourcoursetimestamp');													
+			$cache->set('yourcoursetimestamp', time());																	
 		}
-		
-		if ($this->content !== null) 
-		{
-		  return $this->content;
-		}
-	 
-		$this->content = new stdClass;
-		$this -> content -> text = $content;		
-		$this->content->footer = 'Your Course';
-	 
-	   
-		return $this->content;
-    }
+			return $content;
+	}
 } // end class
