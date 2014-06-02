@@ -16,11 +16,12 @@ class block_your_course extends block_base
 	public function get_content() 
 	{
 		global $CFG;
-		$cache = cache::make('block_your_course', 'yourcoursedata');
-		$content = "";
+		$cache = cache::make('block_your_course', 'yourcoursedata'); // call factory method for caching
+		$content = ""; 
 		$usecache = false;
 		$cachettl = 60; // cache ttl seconds
 		
+		// determine whether cache exists, needs refreshing
 		if ($cachetimestamp = $cache->get('yourcoursetimestamp')){
 			if ((time() - $cachetimestamp) < $cachettl){
 				$usecache = true;
@@ -28,9 +29,11 @@ class block_your_course extends block_base
 		}
 		
 		if ($usecache){
+			// use cached data
 			$content = $cache->get('yourcoursedata');
 		}
 		else{
+			// re-fetch content and rebuild cache
 			$content = $this->get_yc_content($cache);
 		}
 		
@@ -78,7 +81,9 @@ class block_your_course extends block_base
 	        "<a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a></p>" . 
 	        "time generated = " . time();
 			
+			// set data in cache
 			$cache->set('yourcoursedata', $content);
+			// set timestamp in cache to compare to ttl later
 			$cache->set('yourcoursetimestamp', time());																	
 		}
 			return $content;
