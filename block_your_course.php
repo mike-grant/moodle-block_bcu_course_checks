@@ -11,11 +11,13 @@ class block_your_course extends block_base
 	public function init()
 	{		 
 		$this -> title = get_string('yourcourse', 'block_your_course');	
-	}
+	}	
 
 	public function get_content() 
 	{
 		global $CFG, $COURSE;
+		
+		$cache = cache::make('block_your_course', 'yourcoursedata');
 			
 		$url = 'http://icitydelta.bcu.ac.uk/api/yourcourse/' . $CFG->facshort . '/' . $COURSE->id;
 			
@@ -42,7 +44,11 @@ class block_your_course extends block_base
 			$module_guide_url = $module -> ModuleGuideUrl;			
 			$content = "<h3>Module information</h3>" . "<p>Leader: <a href=\"mailto:$email\">$leader</a><br>" . "Tel: $tel<br>" . 
 				"<a href=\"$module_details_url\" target=\"modulewin\">Module details</a><br>" . 
-				"<a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a></p>";			
+				"<a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a></p>";
+				
+			$cache->set('yourcoursedata', $content);
+			$cache->set('yourcoursetimestamp', time());
+			$content .= $cache->get('yourcoursetimestamp');													
 		}
 		
 		if ($this->content !== null) 
@@ -54,6 +60,7 @@ class block_your_course extends block_base
 		$this -> content -> text = $content;		
 		$this->content->footer = 'Your Course';
 	 
+	   
 		return $this->content;
     }
 } // end class
