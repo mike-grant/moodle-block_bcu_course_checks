@@ -17,22 +17,17 @@ class block_your_course extends block_base
 	{
 		global $CFG;
 		$cache = cache::make('block_your_course', 'yourcoursedata'); // call factory method for caching
-		$content = ""; 
-		$usecache = false;
+		$content = "";		
 		$cachettl = 60; // cache ttl seconds
 		
 		// determine whether cache exists, needs refreshing
 		if ($cachetimestamp = $cache->get('yourcoursetimestamp')){
 			if ((time() - $cachetimestamp) < $cachettl){
-				$usecache = true;
+				$content = $cache->get('yourcoursedata');
 			}			
 		}
 		
-		if ($usecache){
-			// use cached data
-			$content = $cache->get('yourcoursedata');
-		}
-		else{
+		if ($content == ""){			
 			// re-fetch content and rebuild cache
 			$content = $this->get_yc_content($cache);
 		}
