@@ -52,7 +52,7 @@ class block_your_course extends block_base
 	 
 		$this->content = new stdClass;
 		$this -> content -> text = $content;		
-		$this->content->footer = 'Your Course: footer';
+		$this->content->footer = 'Your Course';
 	 
 		return $this->content;
     }
