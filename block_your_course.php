@@ -46,7 +46,21 @@ class block_your_course extends block_base
 		global $CFG, $COURSE;
 		
 		$content = null;
-		$url = 'http://icitydelta.bcu.ac.uk/api/yourcourse/' . $CFG->facshort . '/' . $COURSE->id;			
+		# If running on localhost try a test URL...
+		# Get useful environment variables
+		$server_name = $_SERVER['SERVER_NAME'];
+		
+		# XAMMP on localhost on PC 
+		if($server_name == 'localhost')
+		{
+			$url = 'http://icitydelta.bcu.ac.uk/api/yourcourse/tee/48';
+
+		}
+		else
+		{
+			$url = 'http://icitydelta.bcu.ac.uk/api/yourcourse/' . $CFG->facshort . '/' . $COURSE->id;
+		}
+		# Set HTTP headers to get XML back			
 		$headers = array(
 	        'Content-Type' => 'application/xml',
 	        'Accept' => 'application/xml'
@@ -66,7 +80,7 @@ class block_your_course extends block_base
 			$content = "<h3>Module information</h3>" . "<p>Leader: <a href=\"mailto:$email\">$leader</a><br>" . "Tel: $tel<br>" . 
 			"<a href=\"$module_details_url\" target=\"modulewin\">Module details</a><br>" . 
 	        "<a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a></p>" . 
-	        "time generated = " . time();			
+	        "time generated = " . time();
 			
 			// set data in cache
 			$cache->set('yourcoursedata', $content);
