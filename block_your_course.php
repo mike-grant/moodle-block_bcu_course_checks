@@ -49,12 +49,27 @@ class block_your_course extends block_base
 		global $CFG, $COURSE;
 		
 		$content = "";
-		$url = 'http://icitydelta.bcu.ac.uk/api/yourcourse/' . $CFG->facshort . '/' . $COURSE->id;			
+		# If running on localhost try a test URL...
+		# Get useful environment variables
+		$server_name = $_SERVER['SERVER_NAME'];
+		
+		# XAMMP on localhost on PC 
+		if($server_name == 'localhost')
+		{
+			$url = 'http://icitydelta.bcu.ac.uk/api/yourcourse/tee/48';
+
+		}
+		else
+		{
+			$url = 'http://icitydelta.bcu.ac.uk/api/yourcourse/' . $CFG->facshort . '/' . $COURSE->id;
+		}
+		# Set HTTP headers to get XML back			
 		$headers = array(
 	        'Content-Type' => 'application/xml',
 	        'Accept' => 'application/xml'
 	    );		
 			
+		# Use Moodle function (in filelib.php) to get XML data to save Curl faffery
 		$data = download_file_content($url, $headers, null, false, '300', '20', true, null, false);
 			
 		if (!$data)
@@ -63,7 +78,8 @@ class block_your_course extends block_base
 			$content = "It does not look like there is any YourCourse information for this module"; 
 		}
 		else 
-		{					
+		{
+			# Parse the returned XML to extract course data and URLs	
 			$module = simplexml_load_string($data);			
 			
 			$leader = $module -> ModuleLeader[0] -> DisplayName;
