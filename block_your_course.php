@@ -22,7 +22,7 @@ class block_your_course extends block_base
 		
 		global $CFG;	
 		$cache = cache::make('block_your_course', 'yourcoursedata'); // call factory method for caching				
-		$cachettl = 60; // cache ttl seconds
+		$cachettl = 5; // cache ttl seconds
 		
 		// determine whether cache exists, needs refreshing
 		if ($cachetimestamp = $cache->get('yourcoursetimestamp')){
@@ -43,7 +43,7 @@ class block_your_course extends block_base
     }
 
 	private function get_yc_content($cache){
-		global $CFG, $COURSE;
+		global $CFG, $COURSE, $OUTPUT;
 		
 		$content = null;
 		# If running on localhost try a test URL...
@@ -73,14 +73,17 @@ class block_your_course extends block_base
 			$module = simplexml_load_string($data);			
 			
 			$leader = $module -> ModuleLeader[0] -> DisplayName;
-			$email = $module->ModuleLeader->Email;
+			$email = strtolower($module->ModuleLeader->Email);
 			$tel = $module -> ModuleLeader -> Phone;
 			$module_details_url = $module -> YourCourseModuleUrl;
-			$module_guide_url = $module -> ModuleGuideUrl;			
-			$content = "<h3>Module information</h3>" . "<p>Leader: <a href=\"mailto:$email\">$leader</a><br>" . "Tel: $tel<br>" . 
+			$module_guide_url = $module -> ModuleGuideUrl;				
+			$content = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/email'), 'class' => 'icon'));
+			$content .= obfuscate_mailto($email, 'email me');
+			
+			/*$content .= "<h3>Module information</h3>" . "<p>Leader: <a href=\"mailto:$email\">$leader</a><br>" . "Tel: $tel<br>" . 
 			"<a href=\"$module_details_url\" target=\"modulewin\">Module details</a><br>" . 
 	        "<a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a></p>" . 
-	        "time generated = " . time();
+	        "time generated = " . time();*/ 
 			
 			// set data in cache
 			$cache->set('yourcoursedata', $content);
