@@ -120,7 +120,9 @@ class block_your_course extends block_base
 			$module_details_url = $module -> YourCourseModuleUrl;
 			$module_guide_url = $module -> ModuleGuideUrl;	
 			# Get the URL of the official Moodle email icon using the OUTPUT API	
-            $mail_icon = $OUTPUT->pix_url('i/email', 'core'); // Output an img tag pointing to the image
+            // $mail_icon = $OUTPUT->pix_url('i/email', 'core'); // Output an img tag pointing to the image
+            # using html_writer and setting css class for icon
+            $mail_icon =  html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/email'), 'class' => 'icon'));
             # Assemble block text
 			$content = "<h3>Module information</h3>
 			<p>Leader: $leader<br>
