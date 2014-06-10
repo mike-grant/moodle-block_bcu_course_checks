@@ -148,17 +148,14 @@ class block_your_course extends block_base
 	*/
 	public function specialization() 
 	{
-		# Instantiation added to prevent pedantic "Creating default object from empty value" warning
-		# See http://www.trash-factor.com/content/php-error-creating-default-object-empty-value
-		$this -> config=  new stdClass;	
-	  if (!empty($this->config->title)) 
-	  {
-		$this->title = $this->config->title;
-	  } 
-	  else 
-	  {
-		$this->config->title = 'Default Your Course block title ...';
-	  }
+		# If the admin has edited optional fields (eg block name) then display that.
+		if (!empty($this -> config -> title)) 
+		{
+			$this -> title = $this -> config -> title;
+		} else 
+		{ 
+			$this -> config -> title = 'Your Course';
+		}
 	 
 	  if (empty($this->config->text)) 
 	  {
