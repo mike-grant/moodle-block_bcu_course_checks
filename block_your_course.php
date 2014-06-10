@@ -136,7 +136,7 @@ class block_your_course extends block_base
 			$content = "<p style='text-align:center'>Module Leader:<br />
 			<img src=\"$leader_photo\" alt=\"Module leader photo\" title=\"Module leader photo\" align=\"middle\">
 			<br />$leader<br />		
-			Tel: $tel &nbsp; <a href=\"mailto:$email\"><img src=\"$mail_icon\" alt=\"Email the module leader\" title=\"Email the module leader \"/></a><br /><br />			
+			Tel: $tel &nbsp; <a href=\"mailto:$email?subject=$COURSE->fullname\"><img src=\"$mail_icon\" alt=\"Email the module leader\" title=\"Email the module leader \"/></a><br /><br />			
 	        <a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a><br />
 	        <a href=\"$module_details_url\" target=\"modulewin\">Module details</a><br /><br />
 	        $assignments</p>
