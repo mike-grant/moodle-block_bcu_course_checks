@@ -6,7 +6,7 @@ Called from the init() in the main block file /moodle/blocks/yourcourse/block_yo
 */
 
 $string['pluginname'] = 'Your Course block';
-$string['yourcourse'] = 'Your Course';
+$string['yourcourse'] = 'Module Information:';
 $string['yourcourse:addinstance'] = 'Add a new Your Course block';
 $string['yourcourse:myaddinstance'] = 'Add a new Your Course block to the My Moodle page';
 $string['headerconfig'] = 'Block display options';

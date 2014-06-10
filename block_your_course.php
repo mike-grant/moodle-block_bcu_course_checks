@@ -31,7 +31,7 @@ class block_your_course extends block_base
 		else
 		#...set the TTL to a minute
 		{
-			$cachettl = 60; // cache ttl seconds
+			$cachettl = 5; // cache ttl seconds
 		}
 
 		
@@ -57,7 +57,7 @@ class block_your_course extends block_base
 		
 		$this->content = new stdClass;
 		$this -> content -> text = $content;		
-		$this->content->footer = 'Your Course footer';	   
+		// $this->content->footer = 'Your Course footer';	   
 		return $this->content;
     }
 
@@ -120,15 +120,12 @@ class block_your_course extends block_base
 			$module_details_url = $module -> YourCourseModuleUrl;
 			$module_guide_url = $module -> ModuleGuideUrl;	
 			# Get the URL of the official Moodle email icon using the OUTPUT API	
-            // $mail_icon = $OUTPUT->pix_url('i/email', 'core'); // Output an img tag pointing to the image
-            # using html_writer and setting css class for icon
-            $mail_icon =  html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/email'), 'class' => 'icon'));
+            $mail_icon = $OUTPUT->pix_url('i/email', 'core'); // Output an img tag pointing to the image
             # Assemble block text
-			$content = "<h3>Module information</h3>
-			<p>Leader: $leader<br>
-			<img src=\"$leader_photo\" alt=\"Module leader photo\" title=\"Module leader photo\">&nbsp;
-			<a href=\"mailto:$email\"><img src=\"$mail_icon\" alt=\"Email the module leader\" title=\"Email the module leader \"/></a>
-			Tel: $tel<br> 
+			$content = "<p style='text-align:center'>Module Leader:<br />
+			<img src=\"$leader_photo\" alt=\"Module leader photo\" title=\"Module leader photo\" align=\"middle\">
+			<br />$leader<br />		
+			Tel: $tel &nbsp; <a href=\"mailto:$email\"><img src=\"$mail_icon\" alt=\"Email the module leader\" title=\"Email the module leader \"/></a><br /><br /> 
 			<a href=\"$module_details_url\" target=\"modulewin\">Module details</a><br>
 	        <a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a></p>
 	        " ;
