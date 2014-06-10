@@ -124,23 +124,60 @@ class block_your_course extends block_base
 			$assignments = '';
 			$i = 0;
 			
-			foreach ($assignurls->string as $assignurl){
-				$i ++;
-				$assignments .= "<a href='$assignurl'>Assignment " . $i . "</a><br />";
-			}		
-			rtrim($assignments, '<br />');
-			
 			# Get the URL of the official Moodle email icon using the OUTPUT API	
             $mail_icon = $OUTPUT->pix_url('i/email', 'core'); // Output an img tag pointing to the image
+
+         	if (! empty($this -> config -> modulenotes)) 
+			{            
+            	$module_notes = $this -> config -> modulenotes;
+			}
             # Assemble block text
-			$content = "<p style='text-align:center'>Module Leader:<br />
+
+            # Block configuration options:
+            # MODULE LEADER
+            # Details of module leader with mail icon
+            $leader_details = "Module Leader: $leader<br />";
+			# Display photo of the Dear Leader?
+            if ($this -> config -> leaderphoto)
+			{
+				$leader_details .= "<img src=\"$leader_photo\" alt=\"Module leader photo\" title=\"Module leader photo\" align=\"middle\"><br />";
+			}
+			$leader_details .= "Tel: $tel &nbsp; <a href=\"mailto:$email?subject=$COURSE->fullname\">
+								<img src=\"$mail_icon\" alt=\"Email the module leader\" title=\"Email the module leader \" /></a><br /><br />";
+			
+			# ASSIGNMENTS
+            if ($this -> config -> assignments)
+			{
+				#  Add links to assignments
+				foreach ($assignurls->string as $assignurl)
+				{
+					$i ++;
+					$assignments .= "<a href='$assignurl'>Assignment " . $i . "</a><br />";
+				}		
+				rtrim($assignments, '<br />');
+		
+			}	
+			else 
+			{
+				$assignments = "<br />";
+			}
+			
+			$content = "<p style='text-align:center'> $leader_details
+						<a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a><br />
+	        			<a href=\"$module_details_url\" target=\"modulewin\">Module details</a><br /><br />
+	        			$assignments
+				        $module_notes</p>";
+			
+			/*$content = "<p style='text-align:center'>" . "Module Leader:<br />
 			<img src=\"$leader_photo\" alt=\"Module leader photo\" title=\"Module leader photo\" align=\"middle\">
 			<br />$leader<br />		
 			Tel: $tel &nbsp; <a href=\"mailto:$email?subject=$COURSE->fullname\"><img src=\"$mail_icon\" alt=\"Email the module leader\" title=\"Email the module leader \"/></a><br /><br />			
 	        <a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a><br />
 	        <a href=\"$module_details_url\" target=\"modulewin\">Module details</a><br /><br />
-	        $assignments</p>
-	        " ;			
+	        $assignments<br />
+	        $module_notes</p>
+	        " ;		
+			*/	
 			
 			// set data in cache
 			$cache->set('yourcoursedata', $content);
@@ -168,14 +205,16 @@ class block_your_course extends block_base
 			$this -> config -> title = 'Your Course';
 		}
 	 
-	  if (empty($this->config->text)) 
+	  if (empty($this -> config -> text)) 
 	  {
 		$this->config->text = 'Default Your Course block text ...';
 	  }    
 	  
-	  if (empty($this->config->textarea))
+	  if (empty($this -> config -> modulenotes))
 	  {
-		$this -> config -> textarea = "Default text in textarea...";
+		$this -> config -> modulenotes = "Default module notes...";
 	  }
+	  
+
 	}
 } // end class

@@ -25,33 +25,22 @@ class block_your_course_edit_form extends block_edit_form
 		# Option to change the block title
 		$mform->addElement('text', 'config_title', get_string('blocktitle', 'block_your_course'));
 		$mform->setDefault('config_title', 'default value');
-		$mform->setType('config_title', PARAM_MULTILANG);			
- 
-        // A sample string variable with a default value.
-		# This should get the string 'blockstring' from 
-		# blocks/your_course/lang/en/block/block_your_course.php but 
-		# you need to purge caches to see it work if you edit the string.
-
-        //$mform->addElement('text', 'config_text', get_string('option1', 'block_your_course'));
-		//$mform->setDefault('config_text', 'default value');
-        //$mform->setType('config_text', PARAM_TEXT);  
-		# Add a text area
-		//$mform->addElement('textarea', 'config_textarea', get_string("field_text", "block_your_course"), 'wrap="virtual" rows="20" cols="50"');
-		//$mform->setDefault('config_textarea', 'default textarea value');
-        //$mform->setType('config_textarea', PARAM_TEXT); 
+		$mform->setType('config_title', PARAM_MULTILANG);	
 		
-		// A sample string variable with a default value.
-		# These values should be acted upon by the specialization() method in 
-		# the main block class.
-		//$mform->addElement('text', 'config_title', get_string('blocktitle', 'block_your_course'));
-		//$mform->setDefault('config_title', 'this and that');
-		//$mform->setType('config_title', PARAM_MULTILANG);
-	
-		# Add various other elements for the hell of it
-		# See http://docs.moodle.org/dev/lib/formslib.php_Form_Definition for element list
-		# Date picker
-		//$mform->addElement('date_selector', 'assesstimefinish', get_string('to'));
-       
+		# Options to show/hide block elements (assignments, leader photo, etc)	
+		# NB: a plain 'checkbox' can't be used - you have to use 'advcheckbox' for settings to be saved. 
+		# See http://docs.moodle.org/dev/lib/formslib.php_Form_Definition#checkbox
+		
+		# Add a check box to toggle module leader photo display
+		$mform->addElement('advcheckbox', 'config_leaderphoto', get_string('leaderphoto', 'block_your_course'));	
+		
+		# Add a check box to toggle display of assignment links
+		$mform->addElement('advcheckbox', 'config_assignments', get_string('assignments', 'block_your_course'));			
+ 
+		# Add a text area for comments on the module
+		$mform->addElement('textarea', 'config_modulenotes', get_string("modulenotes", "block_your_course"), 'wrap="virtual" rows="20" cols="50"');
+        $mform->setType('config_modulenotes', PARAM_TEXT); 
+		
  
     } 
  

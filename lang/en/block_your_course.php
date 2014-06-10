@@ -11,12 +11,10 @@ $string['yourcourse:addinstance'] = 'Add a new Your Course block';
 $string['yourcourse:myaddinstance'] = 'Add a new Your Course block to the My Moodle page';
 $string['headerconfig'] = 'Block display options';
 $string['descconfig'] = 'Block settings for the Moodle admin to tweak';
-$string['labelallowhtml'] = 'Permit HTML in this block';
-$string['descallowhtml'] = 'Enable HTML code in this block';
-$string['field_text'] = 'Put yer text in here, mush';
+$string['modulenotes'] = 'Module notes';
 $string['blocktitle'] = 'Block title';
-
-
+$string['leaderphoto'] = "Display photo of module leader";
+$string['assignments'] = "Display student assignment links";
 
 
 
