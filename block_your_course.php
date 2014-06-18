@@ -13,6 +13,16 @@ class block_your_course extends block_base
 		$this -> title = get_string('yourcourse', 'block_your_course');	
 	}	
 
+	/**
+	 * Generate the content for the block, returning it in $this -> content.
+	 * This is the standard approach in Moodle.
+	 * Note that the content is actually defined in get_yc_content() where it's put
+	 * into a cache. The get_content() function checks the cache content, and if the cache 
+	 * is empty, or if its content is past its use-by time, get_yc_content() is called
+	 * to refill the cache. 
+	 * So, if you want to add more stuff to the content, do it in get_yc_content(). 
+	 * @return string 
+	 */
 	public function get_content() 
 	{
 		# If content's already defined, skip the code below...				
@@ -48,7 +58,7 @@ class block_your_course extends block_base
 	
 		}
 	
-		# If the cache has passed its expire by date, rebuild the block 
+		# If the cache has passed its expire by time, rebuild the block 
 		# content and put that into the cache by calling function below. 
 		if (empty ($content)){			
 			// re-fetch content and rebuild cache
@@ -81,7 +91,15 @@ class block_your_course extends block_base
 	{
 	  return false;
 	}	
-		
+	
+	/**
+	 * The main content-generating function. 
+	 * This function creates the block content, shoves it into a cache, 
+	 * then returns it to the calling get_content() function.
+	 * If you want to add owt to the block content, do it here. 
+	 * @return string
+	 * 
+	 */
 	private function get_yc_content($cache){
 		global $CFG, $COURSE, $OUTPUT;
 		
@@ -90,7 +108,13 @@ class block_your_course extends block_base
 
 		if($_SERVER['SERVER_NAME'] == 'localhost')
 		{
+			# Test URL which returns XML with correct headers sent
 			$url = 'http://icitydelta.bcu.ac.uk/api/yourcourse/tee/48';
+			# URL below doesn't return XML
+			// $url = "http://icitydelta.bcu.ac.uk/api/yourcourse/biad/60";
+			# URL below guaranteed to return valid and well-formed XML
+			//$url =  "http://sonet.nottingham.ac.uk/rlos/rlo_rssfeed.php";
+			
 		}
 		else
 		#...get the course URL from the live system
@@ -107,11 +131,21 @@ class block_your_course extends block_base
 		# Get the data using a Moodle function defined in /lib/filelib.php
 		# Saves faffing about with CURL
 		$data = download_file_content($url, $headers, null, false, '300', '20', true, null, false);
+		# If a CURL error occurs, maybe down to an invalid URL, then return 
+		# an empty string. This will effectively hide the Your Course block. 
+		if (!$data)
+		{
+			return "";
+		}
 			
 		if ($data)
 		{
 			# Parse the returned XML to extract useful data
-			$module = simplexml_load_string($data);			
+			# If a XML error occurs, just return an empty string
+			if (!$module = simplexml_load_string($data))
+			{
+				return "";
+			}			
 			# Put the various elements into variables for readability. Never mind 'code is beauty'.
 			$leader = $module -> ModuleLeader[0] -> DisplayName;
 			$leader_photo = $module -> ModuleLeader[0] -> PhotographUrl;
@@ -168,17 +202,7 @@ class block_your_course extends block_base
 	        			$assignments
 				        $module_notes</p>";
 			
-			/*$content = "<p style='text-align:center'>" . "Module Leader:<br />
-			<img src=\"$leader_photo\" alt=\"Module leader photo\" title=\"Module leader photo\" align=\"middle\">
-			<br />$leader<br />		
-			Tel: $tel &nbsp; <a href=\"mailto:$email?subject=$COURSE->fullname\"><img src=\"$mail_icon\" alt=\"Email the module leader\" title=\"Email the module leader \"/></a><br /><br />			
-	        <a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a><br />
-	        <a href=\"$module_details_url\" target=\"modulewin\">Module details</a><br /><br />
-	        $assignments<br />
-	        $module_notes</p>
-	        " ;		
-			*/	
-			
+		
 			// set data in cache
 			$cache->set('yourcoursedata', $content);
 			// set timestamp in cache to compare to ttl later
