@@ -26,15 +26,6 @@ $settings->add(new admin_setting_heading
 	)
 	);
 	
-# ...then a check box, to enable/disable HTML in the block
- 
-$settings->add(new admin_setting_configcheckbox
-	(
-		'simplehtml/Allow_HTML',
-		get_string('labelallowhtml', 'block_your_course'),
-		get_string('descallowhtml', 'block_your_course'),
-		'1'
-	)
-	);
-		
+
+
 ?>
