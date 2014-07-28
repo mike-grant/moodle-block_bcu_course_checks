@@ -21,8 +21,8 @@
 $settings->add(new admin_setting_heading
 	(
 		'headerconfig',
-		get_string('headerconfig', 'block_your_course'),
-		get_string('descconfig', 'block_your_course')
+		get_string('headerconfig', 'block_bcu_your_course'),
+		get_string('descconfig', 'block_bcu_your_course')
 	)
 	);
 	

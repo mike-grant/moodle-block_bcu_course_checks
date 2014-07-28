@@ -8,7 +8,7 @@ http://docs.moodle.org/dev/Blocks
 $capabilities = array
 (
 
-	'block/your_course:myaddinstance' => array
+	'block/bcu_your_course:myaddinstance' => array
 	(
 		'captype' => 'write',
 		'contextlevel' => CONTEXT_SYSTEM,
@@ -20,7 +20,7 @@ $capabilities = array
 		'clonepermissionsfrom' => 'moodle/my:manageblocks'
 	),
 
-	'block/your_course:addinstance' => array
+	'block/bcu_your_course:addinstance' => array
 	(
 		'riskbitmask' => RISK_SPAM | RISK_XSS,
 
