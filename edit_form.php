@@ -7,7 +7,7 @@ See Blocks tutorial at:
 http://docs.moodle.org/dev/Blocks
 */
  
-class block_your_course_edit_form extends block_edit_form 
+class block_bcu_your_course_edit_form extends block_edit_form 
 {
  
 	/**
@@ -23,7 +23,7 @@ class block_your_course_edit_form extends block_edit_form
         $mform->addElement('header', 'configheader', get_string('blocksettings', 'block'));
 		
 		# Option to change the block title
-		$mform->addElement('text', 'config_title', get_string('blocktitle', 'block_your_course'));
+		$mform->addElement('text', 'config_title', get_string('blocktitle', 'block_bcu_your_course'));
 		$mform->setDefault('config_title', 'default value');
 		$mform->setType('config_title', PARAM_MULTILANG);	
 		
@@ -32,13 +32,13 @@ class block_your_course_edit_form extends block_edit_form
 		# See http://docs.moodle.org/dev/lib/formslib.php_Form_Definition#checkbox
 		
 		# Add a check box to toggle module leader photo display
-		$mform->addElement('advcheckbox', 'config_leaderphoto', get_string('leaderphoto', 'block_your_course'));	
+		$mform->addElement('advcheckbox', 'config_leaderphoto', get_string('leaderphoto', 'block_bcu_your_course'));	
 		
 		# Add a check box to toggle display of assignment links
-		$mform->addElement('advcheckbox', 'config_assignments', get_string('assignments', 'block_your_course'));			
+		$mform->addElement('advcheckbox', 'config_assignments', get_string('assignments', 'block_bcu_your_course'));			
  
 		# Add a text area for comments on the module
-		$mform->addElement('textarea', 'config_modulenotes', get_string("modulenotes", "block_your_course"), 'wrap="virtual" rows="20" cols="50"');
+		$mform->addElement('textarea', 'config_modulenotes', get_string("modulenotes", "block_bcu_your_course"), 'wrap="virtual" rows="20" cols="50"');
         $mform->setType('config_modulenotes', PARAM_TEXT); 
 		
  
