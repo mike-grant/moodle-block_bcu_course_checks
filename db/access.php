@@ -5,6 +5,8 @@ http://docs.moodle.org/dev/Blocks
 
 */
 
+defined('MOODLE_INTERNAL') || die();
+
 $capabilities = array
 (
 
