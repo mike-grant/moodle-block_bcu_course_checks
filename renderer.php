@@ -30,10 +30,17 @@ defined('MOODLE_INTERNAL') || die;
  * Main class for rendering the culactivity_stream block
  */
 class block_bcu_your_course_renderer extends plugin_renderer_base {
+        
+    public function your_course_block($id, $content, $module_info) {
+        $output = '';
+        
+        //$output .= $content;
+        $output .= $this->module_information($module_info);
+        
+        return $output;
+    }
 
-
-
-    public function your_course_modal($id, $content) {
+    public function your_course_modal($id, $content, $module_info) {
         $output = '';
         
         $output .= html_writer::start_tag('div', array( // 1
@@ -60,7 +67,7 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
             'class' => 'modal-title'
         ));
         $output .= '<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>'; // Update this to use html_writer content
-        $output .= 'Modal Title';
+        $output .= get_string('modalheading', 'block_bcu_your_course');
         
         $output .= html_writer::end_tag('h4');
         
@@ -70,7 +77,8 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
             'class' => 'modal-body'
         ));
         
-        $output .= $content;
+        //$output .= $content;
+        $output .= $this->module_information($module_info);
         
         $output .= html_writer::end_tag('div'); // 5
         
@@ -91,5 +99,103 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
         $output .= html_writer::end_tag('button');
         
         return $output;
+    }
+
+    public function module_information($module_info)
+    {
+        $output = '';
+        if(is_array($module_info->YourCourseModule)) {
+            
+            foreach($module_info->YourCourseModule as $module_leader) {
+                
+                $output .= html_writer::start_tag('p', array(
+                    'style' => 'text-align: center'
+                ));
+        
+                $output .= $this->process_module_leader($module_leader);
+                
+                $output .= html_writer::end_tag('p');
+                
+            }
+            
+        } else {
+            
+            $output .= html_writer::start_tag('p', array(
+                'style' => 'text-align: center'
+            ));
+            
+            $output .= $this->process_module_leader($module_info->ModuleLeader);
+            
+            $output .= html_writer::end_tag('p');
+            
+        }
+        return $output;
+    }
+        
+    public function process_module_leader($module_leader) {
+        $output = '';
+        
+        echo "<pre>"; print_r($module_leader); echo "</pre>";
+        
+        if($module_leader->DisplayName)
+        {
+            $output .= $this->module_leader_name($module_leader->DisplayName)."<br>";   
+        }
+        
+        if($module_leader->PhotographUrl)
+        {
+            $output .= $this->module_leader_photo($module_leader->PhotographUrl)."<br>";
+        }
+        
+        if($module_leader->Phone)
+        {
+            $output .= $this->module_leader_phone($module_leader->Phone);   
+        }
+        
+        if($module_leader->Email)
+        {
+            $output .= $this->module_leader_email($module_leader->Email);
+        }
+        return $output;
+    }
+    
+    public function module_leader_name($leader_name)
+    {
+        return 'Module Leader: '.$leader_name.'<br>';
+    }
+    
+    public function module_leader_photo($leader_photo)
+    {
+        $output = html_writer::start_tag('img', array(
+            'src' => $leader_photo,
+            'alt' => 'Module Leader Photo',
+            'title' => 'Module Leader Photo',
+        ));
+        
+        return $output;
+    }
+    
+    public function module_leader_phone($leader_phone)
+    {
+        return 'Tel: '.$leader_phone."<br>";
+    }
+    
+    public function module_leader_email($leader_email)
+    {
+        GLOBAL $OUTPUT;
+        
+        $content = html_writer::start_tag('a', array(
+            'href' => 'mailto:'.$leader_email
+        ));
+        $content .= html_writer::start_tag('img', array(
+            'src' => $OUTPUT->pix_url('i/email', 'core'),
+            'alt' => 'Email the module leader',
+            'title' => 'Email the module leader'
+        ));
+        
+        $content .= html_writer::end_tag('a');
+        
+        //$leader_details .= "Tel: $tel &nbsp; <a href=\"mailto:$email?subject=$COURSE->fullname\"><img src=\"$mail_icon\" alt=\"Email the module leader\" title=\"Email the module leader \" /></a><br /><br />";
+        return $content;
     }
 }
