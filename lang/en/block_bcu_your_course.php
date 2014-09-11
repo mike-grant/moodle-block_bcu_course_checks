@@ -15,7 +15,4 @@ $string['modulenotes'] = 'Module notes';
 $string['blocktitle'] = 'Block title';
 $string['leaderphoto'] = "Display photo of module leader";
 $string['assignments'] = "Display student assignment links";
-
-
-
-?>
+$string['modalheading'] = 'Course Information';
