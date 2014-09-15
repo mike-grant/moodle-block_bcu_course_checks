@@ -143,7 +143,8 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
                     $output .= $this->module_details($module_leader->YourCourseModuleUrl)."<br>";
                 }
                 
-                $output .= html_writer::end_tag('p');                
+                $output .= html_writer::end_tag('p');   
+                $output .= html_writer::empty_tag('hr');             
             }
             
             $output .= $this->module_notes($config);
