@@ -31,8 +31,8 @@ defined('MOODLE_INTERNAL') || die;
  */
 class block_bcu_your_course_renderer extends plugin_renderer_base {
         
-    public function your_course_block($id, $module_info) {
-        $output = $this->module_information($module_info);
+    public function your_course_block($id, $module_info, $config) {
+        $output = $this->module_information($module_info, $config);
         return $output;
     }
 
@@ -104,7 +104,7 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
         return $output;
     }
 
-    public function module_information($module_info)
+    public function module_information($module_info, $config)
     {
         $output = '';
         
@@ -142,6 +142,8 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
             {
                 $output .= $this->module_details($module_info->YourCourseModuleUrl)."<br>";
             }
+            
+            $output .= $this->module_notes($config);
             
             $output .= html_writer::end_tag('p');
             
@@ -241,4 +243,13 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
     {
         return html_writer::link($module_details, 'Module Details', array('target'=>'_blank'));
     }
+    
+    public function module_notes($config)
+    {
+        if (! empty($config -> modulenotes)) 
+        {
+            return $config -> modulenotes;
+        }    
+    }
+    
 }
