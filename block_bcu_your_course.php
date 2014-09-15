@@ -39,7 +39,7 @@ class block_bcu_your_course extends block_base
 		# If running on localhost with XAMPP use a short cache TTL for testing...
 		if($_SERVER['SERVER_NAME'] == 'localhost')
 		{
-			$cachettl = 86400; // cache ttl seconds
+			$cachettl = 5; // cache ttl seconds
 		}
 		else
 		#...set the TTL to a minute
@@ -121,9 +121,10 @@ class block_bcu_your_course extends block_base
         }
         else
         {
-        	$url = 'https://icity.bcu.ac.uk/API/CoursePortal/Get?courseId=4443';
+        	$url = 'https://icity.bcu.ac.uk/API/CoursePortal/Get?courseId=3125';
+            $url = 'https://icity.bcu.ac.uk/API/CoursePortal/Get?courseId=3125&studNum=12761804';
         }
-
+        
 		# Set HTTP headers to get XML back from Matt's script	
 		$headers = array
 		(
@@ -169,9 +170,7 @@ class block_bcu_your_course extends block_base
             {
                 $content = $renderer->your_course_modal('testmodal', $module, $this->config);
             }
-            
-            $content .= "<p>".time()."</p>";
-            
+                        
             // set data in cache
             $cache->set('yourcoursedata_'.$USER->id.'_'. $COURSE->id, $content);
             // set timestamp in cache to compare to ttl later

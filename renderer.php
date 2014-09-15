@@ -138,21 +138,16 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
                     $output .= $this->module_guide($module_info->ModuleGuideUrl)."<br>";
                 }
                 
-                if(strlen($module_info->YourCourseModuleUrl)>0)
+                if(strlen($module_leader->YourCourseModuleUrl)>0)
                 {
-                    $output .= $this->module_details($module_info->YourCourseModuleUrl)."<br>";
+                    $output .= $this->module_details($module_leader->YourCourseModuleUrl)."<br>";
                 }
                 
-                $output .= html_writer::end_tag('p');
-                
-                $output .= $this->module_notes($config);
-                
+                $output .= html_writer::end_tag('p');                
             }
             
+            $output .= $this->module_notes($config);
         } else {
-            
-            echo 
-                        
             $output .= html_writer::start_tag('p', array(
                 'style' => 'text-align: center'
             ));
@@ -227,7 +222,6 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
     
     public function module_leader_photo($leader_photo)
     {
-        print_r($leader_photo);
         $output = html_writer::empty_tag('img', array(
             'src' => $leader_photo,
             'alt' => 'Module Leader Photo',
@@ -269,7 +263,7 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
     
     public function module_details($module_details)
     {
-        return html_writer::link($module_details, 'Module Details', array('target'=>'_blank'));
+        return html_writer::link($module_details, 'Your Course', array('target'=>'_blank'));
     }
     
     public function module_notes($config)
@@ -285,5 +279,5 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
             return $content;
         }    
     }
-    
+   
 }

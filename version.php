@@ -11,6 +11,6 @@ http://docs.moodle.org/dev/Blocks
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2014091503;  // YYYYMMDDHH (year, month, day, 24-hr time)
+$plugin->version = 2014091504;  // YYYYMMDDHH (year, month, day, 24-hr time)
 $plugin->requires = 2014051200; // YYYYMMDDHH (This is the release version for Moodle 2.0)
 $plugin->component = 'block_bcu_your_course'; // Full name of the plugin (used for diagnostics)
