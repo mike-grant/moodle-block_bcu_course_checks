@@ -39,7 +39,7 @@ class block_bcu_your_course extends block_base
 		# If running on localhost with XAMPP use a short cache TTL for testing...
 		if($_SERVER['SERVER_NAME'] == 'localhost')
 		{
-			$cachettl = 5; // cache ttl seconds
+			$cachettl = 86400; // cache ttl seconds
 		}
 		else
 		#...set the TTL to a minute
@@ -103,7 +103,7 @@ class block_bcu_your_course extends block_base
 	 * @return string
 	 * 
 	 */
-	private function get_yc_content($cache){
+	private function get_yc_content($cache, $timestamp=false){
 		global $CFG, $COURSE, $OUTPUT, $USER;
 		
 		$content = null;
@@ -121,7 +121,7 @@ class block_bcu_your_course extends block_base
         }
         else
         {
-        	$url = 'https://icity.bcu.ac.uk/API/CoursePortal/Get?courseId=4955';
+        	$url = 'https://icity.bcu.ac.uk/API/CoursePortal/Get?courseId=4443';
         }
 
 		# Set HTTP headers to get XML back from Matt's script	
@@ -152,13 +152,25 @@ class block_bcu_your_course extends block_base
 			}			
             
             $renderer = $this->page->get_renderer('block_bcu_your_course');
-                        
-            if($this->config->displayuntil > time())
+            if($timestamp)
             {
-                $content = $renderer->your_course_block('testmodal', $module, $this->config);
-            } else {
+                $this->config->displayuntil = $timestamp;
+            }
+            if(!empty($this->config->displayuntil))
+            {
+                if($this->config->displayuntil > time())
+                {
+                    $content = $renderer->your_course_block('testmodal', $module, $this->config);
+                } else {
+                    $content = $renderer->your_course_modal('testmodal', $module, $this->config);
+                }
+            }
+            else
+            {
                 $content = $renderer->your_course_modal('testmodal', $module, $this->config);
             }
+            
+            $content .= "<p>".time()."</p>";
             
             // set data in cache
             $cache->set('yourcoursedata_'.$USER->id.'_'. $COURSE->id, $content);
@@ -168,26 +180,10 @@ class block_bcu_your_course extends block_base
 		return $content;
 	}
 
-		/**
-	* Allow tweaks to the block title without having to upgrade or de- and re-install
-	* See http://docs.moodle.org/dev/Blocks/Appendix_A#specialization.28.29
-	* in the Blocks tutorial.
-	* Function called by Moodle after init()
-	
-	*/
-	public function specialization() 
-	{
-		# If the admin has edited optional fields (eg block name) then display that.
-		if (!empty($this -> config -> title)) 
-		{
-			$this -> title = $this -> config -> title;
-		} else 
-		{ 
-			//$this -> config -> title = 'Your Course';
-		}
-        if (empty($this -> config -> modulenotes))
-        {
-            $this -> config -> modulenotes = "Default module notes...";
-        }
-	}
+    public function instance_config_save($data, $nolongerused = false)
+    {
+        $cache = cache::make('block_bcu_your_course', 'yourcoursedata'); // call factory method for caching
+        $this->get_yc_content($cache, $data->displayuntil);
+        return parent::instance_config_save($data);
+    }
 }

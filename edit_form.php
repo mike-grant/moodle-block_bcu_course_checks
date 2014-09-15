@@ -21,7 +21,6 @@ class block_bcu_your_course_edit_form extends block_edit_form
         
         $mform->addElement('date_selector', 'config_displayuntil', get_string('displayuntil', 'block_bcu_your_course'), array(
             'startyear' => date('Y'),
-            'stopyear' => date('Y', time()+1209600),
             'optional'  => false
         ));
         
