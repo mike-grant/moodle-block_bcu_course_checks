@@ -31,16 +31,12 @@ defined('MOODLE_INTERNAL') || die;
  */
 class block_bcu_your_course_renderer extends plugin_renderer_base {
         
-    public function your_course_block($id, $content, $module_info) {
-        $output = '';
-        
-        //$output .= $content;
-        $output .= $this->module_information($module_info);
-        
+    public function your_course_block($id, $module_info) {
+        $output = $this->module_information($module_info);
         return $output;
     }
 
-    public function your_course_modal($id, $content, $module_info) {
+    public function your_course_modal($id, $module_info) {
         $output = '';
         
         $output .= html_writer::start_tag('div', array( // 1
@@ -48,7 +44,7 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
             'class' => 'modal fade',
             'role' => 'dialog',
             'aria-labelledby' => 'myModalLabel',
-            'aria-hidden' => FALSE
+            'aria-hidden' => 'true'
         ));  
         
         $output .= html_writer::start_tag('div', array( // 2
@@ -66,6 +62,7 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
         $output .= html_writer::start_tag('h4', array(
             'class' => 'modal-title'
         ));
+        
         $output .= '<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>'; // Update this to use html_writer content
         $output .= get_string('modalheading', 'block_bcu_your_course');
         
@@ -88,15 +85,21 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
         
         $output .= html_writer::end_tag('div'); //1
         
+         $output .= html_writer::start_tag('div', array(
+            'class' => 'text-center'
+        ));
+        
         $output .= html_writer::start_tag('button', array(
             'class' => 'btn btn-primary btn-lg',
             'data-toggle' => 'modal',
             'data-target' => '#'.$id
         ));       
         
-        $output .= 'test modal button';
+        $output .= get_string('modalbuttontext', 'block_bcu_your_course');
         
         $output .= html_writer::end_tag('button');
+        
+        $output .= html_writer::end_tag('div');
         
         return $output;
     }
@@ -104,15 +107,16 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
     public function module_information($module_info)
     {
         $output = '';
-        if(is_array($module_info->YourCourseModule)) {
-            
+        
+        if(count($module_info->YourCourseModule)>0) {
             foreach($module_info->YourCourseModule as $module_leader) {
-                
                 $output .= html_writer::start_tag('p', array(
                     'style' => 'text-align: center'
                 ));
         
-                $output .= $this->process_module_leader($module_leader);
+                $output .= $this->process_module_leader($module_leader->ModuleLeader)."<br>";
+            
+                $output .= $this->process_module_assignments($module_leader->AssignmentBriefUrls);
                 
                 $output .= html_writer::end_tag('p');
                 
@@ -120,11 +124,24 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
             
         } else {
             
+            echo 
+                        
             $output .= html_writer::start_tag('p', array(
                 'style' => 'text-align: center'
             ));
             
-            $output .= $this->process_module_leader($module_info->ModuleLeader);
+            $output .= $this->process_module_leader($module_info->ModuleLeader)."<br>";
+            $output .= $this->process_module_assignments($module_info->AssignmentBriefUrls);
+            
+            if(strlen($module_info->ModuleGuideUrl)>0)
+            {
+                $output .= $this->module_guide($module_info->ModuleGuideUrl)."<br>";
+            }
+            
+            if($module_info->YourCourseModuleUrl)
+            {
+                $output .= $this->module_details($module_info->YourCourseModuleUrl)."<br>";
+            }
             
             $output .= html_writer::end_tag('p');
             
@@ -134,8 +151,6 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
         
     public function process_module_leader($module_leader) {
         $output = '';
-        
-        echo "<pre>"; print_r($module_leader); echo "</pre>";
         
         if($module_leader->DisplayName)
         {
@@ -159,6 +174,23 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
         return $output;
     }
     
+    public function process_module_assignments($assignments)
+    {
+        $output = '';
+        $i=0;
+        if($assignments)
+        {
+            foreach ($assignments->string as $assignurl)
+            {
+                $i ++;
+                $output .= html_writer::link($assignurl, 'Assignment '.$i, array('target'=>'_blank')).'<br>';
+            }
+        }       
+        rtrim($output, '<br />');
+    
+        return $output;
+    }   
+    
     public function module_leader_name($leader_name)
     {
         return 'Module Leader: '.$leader_name.'<br>';
@@ -166,7 +198,7 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
     
     public function module_leader_photo($leader_photo)
     {
-        $output = html_writer::start_tag('img', array(
+        $output = html_writer::empty_tag('img', array(
             'src' => $leader_photo,
             'alt' => 'Module Leader Photo',
             'title' => 'Module Leader Photo',
@@ -182,10 +214,12 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
     
     public function module_leader_email($leader_email)
     {
-        GLOBAL $OUTPUT;
+        GLOBAL $OUTPUT, $COURSE;
         
-        $content = html_writer::start_tag('a', array(
-            'href' => 'mailto:'.$leader_email
+        $content = 'Email: ';
+        
+        $content .= html_writer::start_tag('a', array(
+            'href' => 'mailto:'.$leader_email.'?subject='.$COURSE->fullname
         ));
         $content .= html_writer::start_tag('img', array(
             'src' => $OUTPUT->pix_url('i/email', 'core'),
@@ -195,7 +229,16 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
         
         $content .= html_writer::end_tag('a');
         
-        //$leader_details .= "Tel: $tel &nbsp; <a href=\"mailto:$email?subject=$COURSE->fullname\"><img src=\"$mail_icon\" alt=\"Email the module leader\" title=\"Email the module leader \" /></a><br /><br />";
         return $content;
+    }
+    
+    public function module_guide($module_guide)
+    {
+        return html_writer::link($module_guide, 'Module Guide', array('target'=>'_blank'));   
+    }
+    
+    public function module_details($module_details)
+    {
+        return html_writer::link($module_details, 'Module Details', array('target'=>'_blank'));
     }
 }
