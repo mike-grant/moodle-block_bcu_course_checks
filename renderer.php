@@ -263,7 +263,7 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
     
     public function module_details($module_details)
     {
-        return html_writer::link($module_details, 'Your Course', array('target'=>'_blank'));
+        return html_writer::link($module_details, get_string('icitylink', 'block_bcu_your_course'), array('target'=>'_blank'));
     }
     
     public function module_notes($config)

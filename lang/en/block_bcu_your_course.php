@@ -18,3 +18,4 @@ $string['assignments'] = "Display student assignment links";
 $string['modalheading'] = 'Module Information';
 $string['modalbuttontext'] = 'View Module Information';
 $string['displayuntil'] = 'Display expanded until';
+$string['icitylink'] = 'View iCity Your Course Page';
