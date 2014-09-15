@@ -6,7 +6,7 @@ Main file for the Your Course block. As reference, see blocks tutorial at:
 http://docs.moodle.org/dev/Blocks
 
 */
-class block__bcu_your_course extends block_base
+class block_bcu_your_course extends block_base
 {
 	public function init()
 	{
@@ -27,7 +27,7 @@ class block__bcu_your_course extends block_base
 	 */
 	public function get_content() 
 	{
-
+        GLOBAL $USER, $COURSE;
 		# If content's already defined, skip the code below...				
 		if ($this->content !== null) 
 		{
@@ -44,26 +44,25 @@ class block__bcu_your_course extends block_base
 		else
 		#...set the TTL to a minute
 		{
-			$cachettl = 5; // cache ttl seconds
+			$cachettl = 86400; // cache ttl seconds
 		}
 
-		
 		// determine whether cache exists, needs refreshing
 		# Timestamp is set in get_yc_content
-		if ($cachetimestamp = $cache->get('yourcoursetimestamp'))
+		if ($cachetimestamp = $cache->get('yourcoursetimestamp_'.$USER->id.'_'. $COURSE->id))
 		{
 			# Compare with current time. If the cache's time to live hasn't expired
 			# then get the data currently in the cache
 			if ((time() - $cachetimestamp) < $cachettl)
 			{
-				$content = $cache->get('yourcoursedata');
+				$content = $cache->get('yourcoursedata_'.$USER->id.'_'. $COURSE->id);
 			}	
 	
 		}
 	
 		# If the cache has passed its expire by time, rebuild the block 
 		# content and put that into the cache by calling function below. 
-		if (empty ($content)){			
+		if (empty ($content)){
 			// re-fetch content and rebuild cache
 			$content = $this->get_yc_content($cache);
 		}
@@ -105,26 +104,26 @@ class block__bcu_your_course extends block_base
 	 * 
 	 */
 	private function get_yc_content($cache){
-		global $CFG, $COURSE, $OUTPUT;
+		global $CFG, $COURSE, $OUTPUT, $USER;
 		
 		$content = null;
 		# If running on localhost with XAMPP try a test URL...
+		if($_SERVER['SERVER_NAME'] != 'localhost')
+        {
+    		if(preg_match('^s\d+^', $USER->username)) {
+    		    // Detect if the current user is a student
+    		    $url = 'https://icity.bcu.ac.uk/API/CoursePortal/Get?courseId='.$COURSE->id.'&studNum='.substr($USER->username, 1);
+    		}
+            else 
+            {
+                $url = 'https://icity.bcu.ac.uk/API/CoursePortal/Get?courseId='.$COURSE->id;
+            }		
+        }
+        else
+        {
+        	$url = 'https://icity.bcu.ac.uk/API/CoursePortal/Get?courseId=4955';
+        }
 
-		if($_SERVER['SERVER_NAME'] == 'localhost')
-		{
-			# Test URL which returns XML with correct headers sent
-			$url = 'http://icitydelta.bcu.ac.uk/api/yourcourse/tee/48';
-			# URL below doesn't return XML - use for testing if data returned
-			//$url = "http://icitydelta.bcu.ac.uk/api/yourcourse/biad/60";
-			# URL below guaranteed to return valid and well-formed XML
-			//$url =  "http://sonet.nottingham.ac.uk/rlos/rlo_rssfeed.php";
-			
-		}
-		else
-		#...get the course URL from the live system
-		{
-			$url = 'http://icitydelta.bcu.ac.uk/api/yourcourse/' . $CFG->facshort . '/' . $COURSE->id;
-		}
 		# Set HTTP headers to get XML back from Matt's script	
 		$headers = array
 		(
@@ -139,6 +138,7 @@ class block__bcu_your_course extends block_base
 		# an empty string. This will effectively hide the Your Course block. 
 		if (!$data)
 		{
+			
 			return "";
 		}
 			
@@ -150,71 +150,24 @@ class block__bcu_your_course extends block_base
 			{
 				return "";
 			}			
-			# Put the various elements into variables for readability. Never mind 'code is beauty'.
-			$leader = $module -> ModuleLeader[0] -> DisplayName;
-			$leader_photo = $module -> ModuleLeader[0] -> PhotographUrl;
-			$email = $module->ModuleLeader->Email;
-			$tel = $module -> ModuleLeader -> Phone;
-			$module_details_url = $module -> YourCourseModuleUrl;
-			$module_guide_url = $module -> ModuleGuideUrl;	
-			
-			$assignurls = $module -> AssignmentBriefUrls;
-			$assignments = '';
-			$i = 0;
-			
-			# Get the URL of the official Moodle email icon using the OUTPUT API	
-            $mail_icon = $OUTPUT->pix_url('i/email', 'core'); // Output an img tag pointing to the image
-
-         	if (! empty($this -> config -> modulenotes)) 
-			{            
-            	$module_notes = $this -> config -> modulenotes;
-			}
-            # Assemble block text
-
-            # Block configuration options:
-            # MODULE LEADER
-            # Details of module leader with mail icon
-            $leader_details = "Module Leader: $leader<br />";
-			# Display photo of the Dear Leader?
-            if ($this -> config -> leaderphoto)
-			{
-				$leader_details .= "<img src=\"$leader_photo\" alt=\"Module leader photo\" title=\"Module leader photo\" align=\"middle\"><br />";
-			}
-			$leader_details .= "Tel: $tel &nbsp; <a href=\"mailto:$email?subject=$COURSE->fullname\">
-								<img src=\"$mail_icon\" alt=\"Email the module leader\" title=\"Email the module leader \" /></a><br /><br />";
-			
-			# ASSIGNMENTS
-            if ($this -> config -> assignments)
-			{
-				#  Add links to assignments
-				foreach ($assignurls->string as $assignurl)
-				{
-					$i ++;
-					$assignments .= "<a href='$assignurl'>Assignment " . $i . "</a><br />";
-				}		
-				rtrim($assignments, '<br />');
-		
-			}	
-			else 
-			{
-				$assignments = "<br />";
-			}
-			
-			$content = "<p style='text-align:center'> $leader_details
-						<a href=\"$module_guide_url\" target=\"modulewin\">Module guide</a><br />
-	        			<a href=\"$module_details_url\" target=\"modulewin\">Module details</a><br /><br />
-	        			$assignments
-				        $module_notes</p>";
-			
-		
-			// set data in cache
-			$cache->set('yourcoursedata', $content);
-			// set timestamp in cache to compare to ttl later
-			$cache->set('yourcoursetimestamp', time());																	
+            
+            $renderer = $this->page->get_renderer('block_bcu_your_course');
+                        
+            if($this->config->displayuntil > time())
+            {
+                $content = $renderer->your_course_block('testmodal', $module, $this->config);
+            } else {
+                $content = $renderer->your_course_modal('testmodal', $module, $this->config);
+            }
+            
+            // set data in cache
+            $cache->set('yourcoursedata_'.$USER->id.'_'. $COURSE->id, $content);
+            // set timestamp in cache to compare to ttl later
+            $cache->set('yourcoursetimestamp_'.$USER->id.'_'. $COURSE->id, time()); 															
 		}
-			return $content;
+		return $content;
 	}
-	
+
 		/**
 	* Allow tweaks to the block title without having to upgrade or de- and re-install
 	* See http://docs.moodle.org/dev/Blocks/Appendix_A#specialization.28.29
@@ -230,19 +183,11 @@ class block__bcu_your_course extends block_base
 			$this -> title = $this -> config -> title;
 		} else 
 		{ 
-			$this -> config -> title = 'Your Course';
+			//$this -> config -> title = 'Your Course';
 		}
-	 
-	  if (empty($this -> config -> text)) 
-	  {
-		$this->config->text = 'Default Your Course block text ...';
-	  }    
-	  
-	  if (empty($this -> config -> modulenotes))
-	  {
-		$this -> config -> modulenotes = "Default module notes...";
-	  }
-	  
-
+        if (empty($this -> config -> modulenotes))
+        {
+            $this -> config -> modulenotes = "Default module notes...";
+        }
 	}
-} // end class
+}
