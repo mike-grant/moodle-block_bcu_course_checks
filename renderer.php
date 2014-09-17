@@ -124,6 +124,7 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
         $output = '';
         
         if(count($module_info->YourCourseModule)>0) {
+            $output .= $this->module_top_notes($config);
             foreach($module_info->YourCourseModule as $module_leader) {
                 $output .= html_writer::start_tag('p', array(
                     'style' => 'text-align: center'
@@ -147,8 +148,11 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
                 $output .= html_writer::empty_tag('hr');             
             }
             
-            $output .= $this->module_notes($config);
+            $output .= $this->module_bottom_notes($config);
         } else {
+            
+            $output .= $this->module_top_notes($config);
+            
             $output .= html_writer::start_tag('p', array(
                 'style' => 'text-align: center'
             ));
@@ -168,7 +172,7 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
             
             $output .= html_writer::end_tag('p');
                 
-            $output .= $this->module_notes($config);
+            $output .= $this->module_bottom_notes($config);
             
         }
         return $output;
@@ -267,18 +271,31 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
         return html_writer::link($module_details, get_string('icitylink', 'block_bcu_your_course'), array('target'=>'_blank'));
     }
     
-    public function module_notes($config)
+    public function module_bottom_notes($config)
     {
-        if (! empty($config -> modulenotes)) 
+        if (! empty($config -> bottommodulenotes)) 
         {
             $content = html_writer::start_tag('p', array(
                 'class' => 'text-center'
             ));
-            $content .= $config -> modulenotes;
+            $content .= $config -> bottommodulenotes;
             $content .= html_writer::end_tag('p'); 
             
             return $content;
         }    
-    }
-   
+    }   
+
+    public function module_top_notes($config)
+    {
+        if (! empty($config -> topmodulenotes)) 
+        {
+            $content = html_writer::start_tag('p', array(
+                'class' => 'text-center'
+            ));
+            $content .= $config -> topmodulenotes;
+            $content .= html_writer::end_tag('p'); 
+            
+            return $content;
+        }    
+    }   
 }
