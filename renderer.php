@@ -129,9 +129,12 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
                 $output .= html_writer::start_tag('p', array(
                     'style' => 'text-align: center'
                 ));
-        
+                
+                if($module_leader->SitsMavKey)
+                {
+                    $output .= $this->process_module_information($module_leader->SitsMavKey);
+                }
                 $output .= $this->process_module_leader($module_leader->ModuleLeader)."<br>";
-            
                 $output .= $this->process_module_assignments($module_leader->AssignmentBriefUrls);
                 
                 if(strlen($module_info->ModuleGuideUrl)>0)
@@ -156,6 +159,11 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
             $output .= html_writer::start_tag('p', array(
                 'style' => 'text-align: center'
             ));
+            
+            if($module_info->SitsMavKey)
+            {
+                $output .= $this->process_module_information($module_info->SitsMavKey);    
+            }
             
             $output .= $this->process_module_leader($module_info->ModuleLeader)."<br>";
             $output .= $this->process_module_assignments($module_info->AssignmentBriefUrls);
@@ -200,6 +208,22 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
         {
             $output .= $this->module_leader_email($module_leader->Email);
         }
+        return $output;
+    }
+    
+    public function process_module_information($module_sits)
+    {
+        $output = '';
+        
+        if($module_sits->ModuleCode)
+        {
+            $output .= $this->module_modulecode($module_sits->ModuleCode);
+        }
+        if($module_sits->Occurrence)
+        {
+            $output .= $this->module_occurrence($module_sits->Occurrence);
+        }
+        
         return $output;
     }
     
@@ -270,6 +294,11 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
     {
         return html_writer::link($module_details, get_string('icitylink', 'block_bcu_your_course'), array('target'=>'_blank'));
     }
+
+    public function module_occurence_code($module_occurence)
+    {
+        return 'Occurence Code: '.$module_occurence;
+    }
     
     public function module_bottom_notes($config)
     {
@@ -297,5 +326,15 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
             
             return $content;
         }    
+    }
+    
+    public function module_modulecode($module_code)
+    {
+        return 'Module Code: '.$module_code.'<br>';
+    }
+    
+    public function module_occurrence($module_occurence)
+    {
+        return 'Occurence: '.$module_occurence.'<br>';
     }   
 }
