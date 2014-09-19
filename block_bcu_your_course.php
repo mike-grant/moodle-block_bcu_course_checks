@@ -181,8 +181,9 @@ class block_bcu_your_course extends block_base
 
     public function instance_config_save($data, $nolongerused = false)
     {
+        global $COURSE, $USER;
         $cache = cache::make('block_bcu_your_course', 'yourcoursedata'); // call factory method for caching
-        $this->get_yc_content($cache, $data->displayuntil);
+        $cache->set('yourcoursetimestamp_'.$USER->id.'_'. $COURSE->id, time()-86400);
         return parent::instance_config_save($data);
     }
 }
