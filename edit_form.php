@@ -25,10 +25,10 @@ class block_bcu_your_course_edit_form extends block_edit_form
         ));
         
 		# Add a text area for comments on the module
-		$mform->addElement('textarea', 'config_topmodulenotes', get_string("topmodulenotes", "block_bcu_your_course"), 'wrap="virtual" rows="20" cols="50"');
+		$mform->addElement('textarea', 'config_topmodulenotes', get_string("topmodulenotes", "block_bcu_your_course"), 'wrap="virtual" rows="4" cols="50"');
         $mform->setType('config_topmodulenotes', PARAM_TEXT); 
         
-        $mform->addElement('textarea', 'config_bottommodulenotes', get_string('bottommodulenotes', 'block_bcu_your_course'), 'wrap="virtual" rows="20" cols="50"');
+        $mform->addElement('textarea', 'config_bottommodulenotes', get_string('bottommodulenotes', 'block_bcu_your_course'), 'wrap="virtual" rows="4" cols="50"');
         $mform->setType('config_bottommodulenotes', PARAM_TEXT);
     }
 }
