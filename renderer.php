@@ -188,15 +188,17 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
         
     public function process_module_leader($module_leader) {
         $output = '';
-        
         if($module_leader->DisplayName)
         {
             $output .= $this->module_leader_name($module_leader->DisplayName)."<br>";   
         }
         
-        if(strlen($module_leader->PhotographUrl)>0)
-        {
-            $output .= $this->module_leader_photo($module_leader->PhotographUrl)."<br>";
+        if($module_leader->NetworkId) {
+            $moodlephoto = $this->module_leader_moodle_photo($module_leader->NetworkId->__toString());
+            $output .= $moodlephoto."<br>";
+            if(!$moodlephoto && strlen($module_leader->PhotographUrl)>0) {
+                $output .= $this->module_leader_photo($module_leader->PhotographUrl)."<br>";
+            }
         }
         
         if($module_leader->Phone)
@@ -209,6 +211,16 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
             $output .= $this->module_leader_email($module_leader->Email);
         }
         return $output;
+    }
+    
+    public function module_leader_moodle_photo($networkid) {
+        global $DB, $OUTPUT;
+        $user = $DB->get_record('user', array('username' => $networkid), '*');
+        if($user->picture > 0) {
+            $userpic = $OUTPUT->user_picture($user, array('width' => '60', 'class' => ''));
+            return $userpic;
+        }
+        return false;
     }
     
     public function process_module_information($module_sits)
