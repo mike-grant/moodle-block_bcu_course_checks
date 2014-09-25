@@ -216,7 +216,7 @@ class block_bcu_your_course_renderer extends plugin_renderer_base {
     public function module_leader_moodle_photo($networkid) {
         global $DB, $OUTPUT;
         $user = $DB->get_record('user', array('username' => $networkid), '*');
-        if($user->picture > 0) {
+        if(ISSET($user->picture)) {
             $userpic = $OUTPUT->user_picture($user, array('width' => '60', 'class' => ''));
             return $userpic;
         }
